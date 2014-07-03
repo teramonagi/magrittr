@@ -36,7 +36,7 @@ NULL
 #'        compound call when environments are locked.
 #'
 #' @return an environment.
-pipe_env <- function(parent, compound = NULL)
+pipe_env <- function(parent, compound = NULL, memorize = NULL)
 {
   # Create a new environment, and set top-level
   env <- new.env(parent = parent)
@@ -44,8 +44,8 @@ pipe_env <- function(parent, compound = NULL)
   env[["__env__"]]      <- env       # reference to "self"
   env[["__locked__"]]   <- FALSE     # controls whether the env can be re-used.
   env[["__compound__"]] <- compound  # a call for compound assignemt. Can be
-                                     #  set here, in cases of locked envirs.
-
+  #  set here, in cases of locked envirs.
+  env[["__memorize__"]] <- memorize  # region for variables you can use after chain evaluation
   env
 }
 
@@ -201,6 +201,11 @@ pipe <- function(tee = FALSE, compound = FALSE)
     # clean the environment to keep it light in long chains.
     if (nm != ".")
       rm(list = nm, envir = env)
+
+    # evaluate memorized variable assignment
+    if (toplevel && !is.null(env[["__memorize__"]])) {
+      lapply(get("__memorize__", env), function(m) eval(m, parent, parent))
+    }
 
     if (toplevel && !is.null(env[["__compound__"]])) {
 
