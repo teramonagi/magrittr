@@ -36,7 +36,7 @@ NULL
 #'        compound call when environments are locked.
 #'
 #' @return an environment.
-pipe_env <- function(parent, compound = NULL, memorize = NULL)
+pipe_env <- function(parent, compound = NULL)
 {
   # Create a new environment, and set top-level
   env <- new.env(parent = parent)
@@ -44,7 +44,9 @@ pipe_env <- function(parent, compound = NULL, memorize = NULL)
   env[["__env__"]]      <- env       # reference to "self"
   env[["__locked__"]]   <- FALSE     # controls whether the env can be re-used.
   env[["__compound__"]] <- compound  # a call for compound assignemt. Can be
+  #  set here, in cases of locked envirs.
   env[["__memorize__"]] <- memorize  # region for variables you can use after chain evaluation
+
   env
 }
 
@@ -64,7 +66,9 @@ pipe_env <- function(parent, compound = NULL, memorize = NULL)
 #' @rdname magrittr-internal
 #'
 #' @details This is not exported.
+pipe <- function(tee = FALSE, compound = FALSE)
 {
+  if (tee && compound)
     stop("Invalid pipe specification.", call. = FALSE)
 
   function(lhs, rhs)
@@ -158,16 +162,12 @@ pipe_env <- function(parent, compound = NULL, memorize = NULL)
       #   * rhs has one or more dots that qualify as placeholder for lhs.
       #   * lhs is placed as first argument in rhs call.
       if (is.symbol(rhs)) {
-        if(memorize){
-          env[["__memorize__"]] <- append(env[["__memorize__"]], call("<-", rhs, lhs))
-          e <- env[[nm]]
-        }
-        else if (!exists(deparse(rhs), env, mode = "function")){
+
+        if (!exists(deparse(rhs), env, mode = "function"))
           stop("RHS appears to be a function name, but it cannot be found.")
-        }
-        else {
-          e <- call(as.character(rhs), as.name(nm))
-        }
+
+        e <- call(as.character(rhs), as.name(nm))
+
       } else {
 
         # Match `.` placeholder at outmost level.
@@ -203,19 +203,6 @@ pipe_env <- function(parent, compound = NULL, memorize = NULL)
     if (nm != ".")
       rm(list = nm, envir = env)
 
-<<<<<<< .mine
-    # evaluate memorized variable assignment
-    if (toplevel && !is.null(env[["__memorize__"]])) {
-      lapply(get("__memorize__", env), function(m) eval(m, parent, parent))
-    }
-
-=======
-    if (toplevel && !is.null(env[["__memorize__"]])) {
-      lapply(get("__memorize__", env), function(m) eval(m, parent, parent))
-    }
-
-
->>>>>>> .theirs
     if (toplevel && !is.null(env[["__compound__"]])) {
 
       # Compound operator was used, so assign the result, rather than return it.
@@ -310,21 +297,3 @@ pipe_env <- function(parent, compound = NULL, memorize = NULL)
 #' colnames(some.data) %<>% paste0("!")
 #' some.data[, 1] %<>% multiply_by(2)
 `%<>%` <- pipe(compound = TRUE)
-
-#' Memorize pipe operator
-#'
-#' Use to overwrite/mask the left-hand side with the result of
-#' piping it forward into the right-hand side, which itself may be a chain.
-#'
-#' @param lhs a symbol or expression which may serve as left-hand
-#'        side for \code{`<-`}.
-#' @param rhs a function/call/expression/chain.
-#' @return No return value. Works by assigning the result.
-#' @rdname compound.op
-#' @export
-#' @examples
-#'
-#' x <- 1:10
-#' x %>% sum %->% y %>% multiply_by(10)
-#' y
-`%->%` <- pipe(memorize = TRUE)
