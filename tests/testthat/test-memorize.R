@@ -7,7 +7,7 @@ test_that("Memorize assignment operator works", {
   expect_that(sum(x), is_identical_to(y))
 
   x <- 1:10
-  x %>% multiply_by(2) %->% y
+  x %>% multiply_by(2) %->% y %->% z
   expect_that(2*x, is_identical_to(y))
 
   x <- 1:10

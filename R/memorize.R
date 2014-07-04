@@ -19,6 +19,13 @@
 #'
 #' iris %>% group_by(Species) %>% summarise(mn=mean(Sepal.Length)) %->% res %>% qplot(data=.,x=Species,y=mn,geom="bar",stat="identity")
 #' res
+#' x <- 1:10
+#' x %>% multiply_by(2) %->% y %->% z
+#'
+#' x <- 1:10
+#' x %>% sin %->% y %>% plot
+#' y
+#'
 #' }
 
 `%->%` <-  function(lhs, rhs)
