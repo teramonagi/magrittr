@@ -3,7 +3,7 @@
 \alias{pipe}
 \title{Function to create a pipe operator.}
 \usage{
-pipe(tee = FALSE, compound = FALSE)
+pipe(tee = FALSE, compound = FALSE, memorize = FALSE)
 }
 \arguments{
 \item{tee}{logical indicating whether the left-hand side should be returned

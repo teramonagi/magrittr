@@ -8,7 +8,6 @@ test_that("Memorize assignment operator works", {
 
   x <- 1:10
   x %>% multiply_by(7) %->% y %->% z
-  print(y)
   expect_equal(7*x, y)
   expect_equal(z, y)
 

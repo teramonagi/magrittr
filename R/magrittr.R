@@ -44,7 +44,7 @@ pipe_env <- function(parent, compound = NULL, memorize = NULL)
   env[["__env__"]]      <- env       # reference to "self"
   env[["__locked__"]]   <- FALSE     # controls whether the env can be re-used.
   env[["__compound__"]] <- compound  # a call for compound assignemt. Can be
-  #  set here, in cases of locked envirs.
+                                     #  set here, in cases of locked envirs.
   env[["__memorize__"]] <- memorize  # region for variables you can use after chain evaluation
 
   env
@@ -97,7 +97,7 @@ pipe <- function(tee = FALSE, compound = FALSE)
       # If it is locked, make a new one. Since compound is passed along in this
       # case, we require that toplevel still be FALSE.
       if (env[["__locked__"]])
-        env <- pipe_env(parent, compound = env[["__compound__"]])
+        env <- pipe_env(parent, compound = env[["__compound__"]], memorize = env[["__memorize__"]])
       toplevel <- FALSE
 
     } else {
@@ -211,6 +211,7 @@ pipe <- function(tee = FALSE, compound = FALSE)
 
       # Compound operator was used, so assign the result, rather than return it.
       eval(call("<-", get("__compound__", env), to.return), parent, parent)
+
     } else if (tee) {
 
       to.return
