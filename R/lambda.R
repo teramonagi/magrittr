@@ -37,7 +37,7 @@
 #'     d <- abs(x) > 0.5
 #'     x*d
 #'   }))
-compose <- function(..., .args = NULL)
+compose <- function(..., .args=NULL)
 {
   dots <- lapply(as.list(substitute(list(...))[-1]), function(dot) {
     if (is.symbol(dot)) {

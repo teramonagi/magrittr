@@ -36,7 +36,7 @@ NULL
 #'        compound call when environments are locked.
 #'
 #' @return an environment.
-pipe_env <- function(parent, compound = NULL)
+pipe_env <- function(parent, compound = NULL, memorize = NULL)
 {
   # Create a new environment, and set top-level
   env <- new.env(parent = parent)
@@ -203,11 +203,14 @@ pipe <- function(tee = FALSE, compound = FALSE)
     if (nm != ".")
       rm(list = nm, envir = env)
 
+    if (toplevel && !is.null(env[["__memorize__"]])) {
+      lapply(get("__memorize__", env), function(m) eval(m, parent, parent))
+    }
+
     if (toplevel && !is.null(env[["__compound__"]])) {
 
       # Compound operator was used, so assign the result, rather than return it.
       eval(call("<-", get("__compound__", env), to.return), parent, parent)
-
     } else if (tee) {
 
       to.return

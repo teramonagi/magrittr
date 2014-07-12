@@ -58,7 +58,13 @@
     # Compound operator was used, so assign the result, rather than return it.
     eval(call("<-", get("__compound__", env), to.return), parent, parent)
 
-  } else {
+  }
+  else if (toplevel && !is.null(env[["__memorize__"]])) {
+    # Memorize operator was used, so each temporal variable willbe assigned the result.
+    lapply(get("__memorize__", env), function(m) eval(m, parent, parent))
+    print("Hello")
+  }
+  else {
 
     if (visibly) to.return else invisible(to.return)
 

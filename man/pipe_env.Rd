@@ -3,7 +3,7 @@
 \alias{pipe_env}
 \title{Function to make a piping environment.}
 \usage{
-pipe_env(parent, compound = NULL)
+pipe_env(parent, compound = NULL, memorize = NULL)
 }
 \arguments{
 \item{parent}{the parent which to assign to the new environment.}

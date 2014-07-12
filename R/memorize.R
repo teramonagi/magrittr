@@ -27,8 +27,7 @@
 #' y
 #'
 #' }
-
-`%->%` <-  function(lhs, rhs)
+memorize <-  function(lhs, rhs)
 {
   # Capture unevaluated arguments
   lhs <- substitute(lhs)
@@ -85,3 +84,5 @@
 
   if (visibly) to.return else invisible(to.return)
 }
+#' @export
+`%->%` <- memorize
